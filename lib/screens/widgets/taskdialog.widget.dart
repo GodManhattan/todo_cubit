@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_cubit/cubits/task/task_cubit.dart';
 import 'dart:math' show sin, pi;
 import 'package:flutter/services.dart' show HapticFeedback;
 
 class TaskDialog extends StatefulWidget {
-  TaskDialog({super.key});
+  const TaskDialog({super.key});
 
   @override
   State<TaskDialog> createState() => _TaskDialogState();
@@ -47,15 +48,7 @@ class _TaskDialogState extends State<TaskDialog>
         _showTitleError = true;
       });
 
-      // Shake 3 times
-      _animationController.reset();
-      _animationController.forward().then((_) {
-        _animationController.reset();
-        _animationController.forward().then((_) {
-          _animationController.reset();
-          _animationController.forward();
-        });
-      });
+      //animation
 
       // Vibrate if available
       HapticFeedback.mediumImpact();
@@ -91,36 +84,32 @@ class _TaskDialogState extends State<TaskDialog>
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Use Transform to apply the shake effect
-            Transform.translate(
-              offset: Offset(offset, 0),
-              child: TextField(
-                controller: _textTitleController,
-                decoration: InputDecoration(
-                  hintText: 'Enter task title',
-                  errorText: _showTitleError ? 'Title cannot be empty' : null,
-                  errorStyle: const TextStyle(color: Colors.red),
-                  focusedBorder: _showTitleError
-                      ? const OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.red, width: 2.0),
-                        )
-                      : null,
-                  enabledBorder: _showTitleError
-                      ? const OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.red, width: 2.0),
-                        )
-                      : null,
-                ),
-                autofocus: true,
-                onChanged: (value) {
-                  if (_showTitleError && value.isNotEmpty) {
-                    setState(() {
-                      _showTitleError = false;
-                    });
-                  }
-                },
+            TextField(
+              controller: _textTitleController,
+              decoration: InputDecoration(
+                hintText: 'Enter task title',
+                errorText: _showTitleError ? 'Title cannot be empty' : null,
+                errorStyle: const TextStyle(color: Colors.red),
+                focusedBorder: _showTitleError
+                    ? const OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.red, width: 2.0),
+                      )
+                    : null,
+                enabledBorder: _showTitleError
+                    ? const OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.red, width: 2.0),
+                      )
+                    : null,
               ),
-            ),
+              autofocus: true,
+              onChanged: (value) {
+                if (_showTitleError && value.isNotEmpty) {
+                  setState(() {
+                    _showTitleError = false;
+                  });
+                }
+              },
+            ).animate(target: _showTitleError ? 1 : 0).shake(),
             const SizedBox(height: 16),
             TextField(
               controller: _textDescController,
